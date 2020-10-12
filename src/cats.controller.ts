@@ -1,15 +1,16 @@
-import { Controller, Get, Post } from '@nestjs/common';
+import { Controller, Get, Post, Res, HttpStatus } from '@nestjs/common';
+import { Response } from 'express';
 
-@Controller('cats')
+@Controller('api')
 export class CatsController {
 
-  @Post()
-  create(): string {
+  @Post('event')
+  createEvent(): string {
     return 'This action adds a new cat';
   }
 
   @Get()
-  findAll(): string {
-    return 'This action returns all cats';
+  findAll(@Res() res: Response){
+    res.status(HttpStatus.OK).json([]);
   }
 }

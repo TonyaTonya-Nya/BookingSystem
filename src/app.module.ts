@@ -1,9 +1,10 @@
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { UsersModule } from './userDB/user.module';
+import { EventsModule } from './DataBase/MeetingEvent/events.module';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { CatsController } from './cats.controller';
+
 
 @Module({
   imports: [
@@ -17,7 +18,7 @@ import { CatsController } from './cats.controller';
       entities: [__dirname + '/**/*.entity{.ts,.js}'],
       synchronize: true,
     }),
-    UsersModule,
+    EventsModule,
   ],
     
   controllers: [AppController,CatsController],
