@@ -6,7 +6,7 @@ export class CatsController {
 
   @Post('event')
   createEvent(): string {
-    return 'This action adds a new cat';
+    return 'This action adds a new cat!';
   }
 
   @Get()

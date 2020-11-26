@@ -31,7 +31,6 @@ export class EventsService {
         e.isCencel=false;
         e.roomId=1;
         e.id=1;
-        
         return await this.eventsRepository.create(e);
     }
 
