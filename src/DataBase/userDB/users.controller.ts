@@ -6,6 +6,7 @@ import { User } from './users.entity';
 export class UsersController {
   constructor(private readonly usersService: UsersService) { }
 
+ 
 
   @Get()
   findAll(): Promise<User[]> {
@@ -13,11 +14,16 @@ export class UsersController {
   }
 
 
-  @Post()
+  @Post('create')
   async create(@Response() res, @Body() data) {
-  
-    let response=await this.usersService.create(data);
+    let response = await this.usersService.create(data);
     res.status(HttpStatus.CREATED).json(response);
   }
-  
+
+
+  @Post('login')
+  async login(@Response() res, @Body() data) {
+    let response = await this.usersService.login(data);
+    res.status(HttpStatus.CREATED).json(response);
+  }
 }

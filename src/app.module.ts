@@ -4,7 +4,6 @@ import { EventsModule } from './DataBase/MeetingEvent/events.module';
 import { UsersModule } from './DataBase/userDB/users.module';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
-import { CatsController } from './cats.controller';
 
 
 @Module({
@@ -23,7 +22,7 @@ import { CatsController } from './cats.controller';
     UsersModule,
   ],
     
-  controllers: [AppController,CatsController],
+  controllers: [AppController],
   providers: [AppService],
 })
 export class AppModule {}
