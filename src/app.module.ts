@@ -1,6 +1,7 @@
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { EventsModule } from './DataBase/MeetingEvent/events.module';
+import { UsersModule } from './DataBase/userDB/users.module';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { CatsController } from './cats.controller';
@@ -19,6 +20,7 @@ import { CatsController } from './cats.controller';
       synchronize: true,
     }),
     EventsModule,
+    UsersModule,
   ],
     
   controllers: [AppController,CatsController],
