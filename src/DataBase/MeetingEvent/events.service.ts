@@ -1,7 +1,10 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, HttpStatus } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
+import { clearConfigCache } from 'prettier';
+import { Repository, Between } from 'typeorm';
 import { Event } from './events.entity';
+import { Validator } from "validator.ts/Validator";
+
 
 @Injectable()
 export class EventsService {
@@ -18,31 +21,98 @@ export class EventsService {
         return this.eventsRepository.findOne(id);
     }
 
+    async findByDate(date: string): Promise<Event[]> {
+
+        let day = new Date(Date.parse(date));
+        console.log(await this.eventsRepository.find({ start_t: Between(+day.valueOf(), +(day.valueOf() + 86400000)) }))
+        return await this.eventsRepository.find({ start_t: Between(+day.valueOf(), +(day.valueOf() + 86400000)) })
+    }
+
     async remove(id: string): Promise<void> {
         await this.eventsRepository.delete(id);
     }
 
-    async create(): Promise<Event> {
-        let e=new Event;
-        e.start_t='2000-01-02';
-        e.end_t='2000-01-04';
-        e.description='NO';
-        e.eventName='event';
-        e.isCencel=false;
-        e.roomId=1;
-        e.id=1;
-        return await this.eventsRepository.create(e);
+    async create(data: any): Promise<[number, string, any]> {
+
+
+        //驗證資料存在性
+        if (Object.keys(data).length === 0) {
+            return [HttpStatus.BAD_REQUEST, "沒有輸入資料", null];
+        }
+
+        let event = new Event();
+        event.eventName = data.eventName;
+        event.roomId = +data.roomId;
+        let s_time = new Date(Date.parse(data.start_t));
+        event.start_t = s_time.valueOf();
+        let e_time = new Date(Date.parse(data.end_t));
+        event.end_t = e_time.valueOf();
+        
+        event.description = data.description;
+        event.isCencel=false;
+
+
+        try {
+            //驗證資料正確性
+            let validator = new Validator();
+            let errors = validator.validate(event);
+
+            if (errors.length != 0) {
+                return [HttpStatus.BAD_REQUEST, "輸入資料有誤", errors];
+            }
+        } catch {
+
+            return [HttpStatus.BAD_REQUEST, "輸入資料缺少", null];
+        }
+
+        //驗證是否已有會議
+        /* let existUser = await this.eventsRepository.find({ account: data.account });
+     
+         if (existUser.length != 0) {
+           return [HttpStatus.BAD_REQUEST, "帳號已存在", null];
+         }*/
+
+
+
+        await this.eventsRepository.save(event).then(() => {
+
+            return [HttpStatus.OK, "OK", null];
+        }).catch(() => {
+
+            return [HttpStatus.BAD_REQUEST, "加入資料庫失敗", null];
+        });
+
+
+       let eventData=await this.eventsRepository.findOne(event)
+     
+
+
+        return [HttpStatus.OK, "OK", eventData];
     }
 
-   /* async create(): Promise<void> {
 
 
-        await this.eventsRepository.create(
 
-            { id:1,eventName: 'Meet', roomId: 1, description: "無", start_t: "2000-08-02", end_t: "2000-08-03", isCencel: false },
 
-        );
-    }*/
+    async delete(data: any): Promise<[number, string, any]> {
+
+         //驗證資料存在性
+         if (Object.keys(data).length === 0) {
+            return [HttpStatus.BAD_REQUEST, "沒有輸入資料", null];
+        }
+
+
+        await this.eventsRepository.delete({id:data.id}).then(() => {
+
+            return [HttpStatus.OK, "OK", null];
+        }).catch(() => {
+
+            return [HttpStatus.BAD_REQUEST, "取消會議失敗", null];
+        });
+
+
+        return [HttpStatus.OK, "OK", null];
+    }
 
 }
 export interface IUsers {

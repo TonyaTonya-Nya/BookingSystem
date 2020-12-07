@@ -1,4 +1,4 @@
-import { Controller, Get,Post } from '@nestjs/common';
+import { Controller, Get, Param, Post, Response, HttpStatus, Body,Delete } from '@nestjs/common';
 import { EventsService } from './events.service';
 import { Event } from './events.entity';
 
@@ -6,16 +6,30 @@ import { Event } from './events.entity';
 export class EventsController {
   constructor(private readonly eventsService: EventsService) { }
 
-  /*
-  @Get()
-  findAll(): Promise<Event[]> {
-    return this.eventsService.findAll();
-  }*/
 
-  @Get()
-  findAll(): string {
-   // { id:1,eventName: 'Meet', roomId: 1, description: "無", start_t: null, end_t: null, isCencel: false }
-    this.eventsService.create( );
-    return "ASAA";
+
+  @Get('date/:date')
+  async find(@Response() res, @Param() params) {
+
+
+    res.status(HttpStatus.OK).json(await this.eventsService.findByDate(params.date));
+
+  }
+
+  @Post('create')
+  async create(@Response() res, @Body() data) {
+
+    let response = await this.eventsService.create(data);
+    res.status(response[0]).json(response);
+
+  }
+
+
+  @Delete('delete')
+  async delete(@Response() res, @Body() data) {
+
+    let response = await this.eventsService.delete(data);
+    res.status(response[0]).json(response);
+
   }
 }

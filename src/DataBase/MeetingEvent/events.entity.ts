@@ -1,4 +1,5 @@
-import { Entity, Column, PrimaryGeneratedColumn} from 'typeorm';
+import { Entity, Column, PrimaryGeneratedColumn, Timestamp} from 'typeorm';
+import {IsLength,IsInt} from "validator.ts/decorator/Validation";
 
 @Entity()
 export class Event {
@@ -7,19 +8,24 @@ export class Event {
   id: number;
 
   @Column()
+  @IsLength(1, 255)
   eventName: string;
 
   @Column()
+  @IsInt()
   roomId: number;
 
   @Column()
+  @IsLength(1, 255)
   description: string;
 
   @Column()
-  start_t: string;
+  @IsInt()
+  start_t: number;
 
   @Column()
-  end_t: string;
+  @IsInt()
+  end_t: number;
 
   @Column({ default: false })
   isCencel: boolean;
