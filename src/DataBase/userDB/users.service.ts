@@ -1,11 +1,9 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable,HttpStatus } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { User } from './users.entity';
 import { AES } from 'crypto-ts';
-import { HttpStatus } from '@nestjs/common';
 import { Validator } from "validator.ts/Validator";
-import { clearConfigCache } from 'prettier';
 
 @Injectable()
 export class UsersService {
@@ -69,15 +67,15 @@ export class UsersService {
 
     await this.usersRepository.save(user).then(() => {
 
-      return [HttpStatus.CREATED, "OK", null];
-    }).catch((res) => {
+      return [HttpStatus.OK, "OK", null];
+    }).catch(() => {
 
       return [HttpStatus.BAD_REQUEST, "加入資料庫失敗", null];
     });
   }
 
 
-  //新增帳戶
+  //登入帳戶
   async login(data: any): Promise<[number, string, any]> {
 
     //驗證資料重複性
@@ -90,7 +88,7 @@ export class UsersService {
   
     if (AES.decrypt(AES.encrypt(data.password, this.privatekey).toString(), this.privatekey).toString() ===
       AES.decrypt(existUser[0].password, this.privatekey).toString()) {
-      return [HttpStatus.CREATED, "登入成功", null];
+      return [HttpStatus.OK, "登入成功", null];
     } else {
       return [HttpStatus.BAD_REQUEST, "密碼錯誤", null];
     }
