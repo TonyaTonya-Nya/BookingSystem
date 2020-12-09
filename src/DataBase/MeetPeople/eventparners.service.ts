@@ -19,6 +19,10 @@ export class EventparnersService {
         return this.eventparnersRepository.findOne(id);
     }
 
+    find(id: string): Promise<Eventparner[]> {
+        return this.eventparnersRepository.find({meetid:+id});
+    } 
+
     async remove(id: string): Promise<void> {
         await this.eventparnersRepository.delete(id);
     }

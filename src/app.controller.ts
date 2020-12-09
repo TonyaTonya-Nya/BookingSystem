@@ -10,9 +10,15 @@ export class AppController {
     return this.appService.getHello();
   }
 
-  @Post('Send')
-  async send(@Response() res, @Body() data) {
-    let response = await this.appService.sned(data);
+  @Post('sendMail')
+  async sendMail(@Response() res, @Body() data) {
+    let response = await this.appService.sendMail(data);
+    res.status(HttpStatus.CREATED).json(response);
+  }
+
+  @Post('sendCalendar')
+  async sendCalendar(@Response() res, @Body() data) {
+    let response = await this.appService.sendCalendar(data);
     res.status(HttpStatus.CREATED).json(response);
   }
 
