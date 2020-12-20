@@ -5,6 +5,9 @@ import { EventparnersModule } from './DataBase/MeetPeople/eventparners.module';
 import { UsersModule } from './DataBase/userDB/users.module';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
+import { AuthService } from './auth/auth.service';
+import { AuthModule } from './auth/auth.module';
+import { UsersController } from './DataBase/userDB/users.controller';
 
 
 @Module({
@@ -22,9 +25,10 @@ import { AppService } from './app.service';
     EventsModule,
     UsersModule,
     EventparnersModule,
+    AuthModule,
   ],
     
-  controllers: [AppController],
+  controllers: [AppController, UsersController],
   providers: [AppService],
 })
 export class AppModule {}

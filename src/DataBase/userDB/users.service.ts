@@ -23,6 +23,10 @@ export class UsersService {
     return this.usersRepository.findOne(id);
   }
 
+  findOneByAccount(account: string): Promise<User> {
+    return this.usersRepository.findOne({ account: account });
+  }
+
   async remove(id: string): Promise<void> {
     await this.usersRepository.delete(id);
   }
@@ -77,7 +81,6 @@ export class UsersService {
 
   //登入帳戶
   async login(data: any): Promise<[number, string, any]> {
-
     //驗證資料重複性
     let existUser = await this.usersRepository.find({ account: data.account });
 
