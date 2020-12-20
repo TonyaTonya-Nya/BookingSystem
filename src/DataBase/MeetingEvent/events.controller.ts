@@ -1,4 +1,4 @@
-import { Controller, Get, Param, Post, Response, HttpStatus, Body,Delete } from '@nestjs/common';
+import { Controller, Get, Param, Post, Response, HttpStatus, Body,Delete,Put } from '@nestjs/common';
 import { EventsService } from './events.service';
 import { Event } from './events.entity';
 
@@ -29,6 +29,16 @@ export class EventsController {
   async delete(@Response() res, @Body() data) {
 
     let response = await this.eventsService.delete(data);
+    res.status(response[0]).json(response);
+
+  }
+
+
+  @Put('update')
+  async update(@Response() res, @Body() data) {
+
+    let response = await this.eventsService.update(data);
+    console.log(response);
     res.status(response[0]).json(response);
 
   }
