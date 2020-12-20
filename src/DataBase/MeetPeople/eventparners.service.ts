@@ -20,8 +20,12 @@ export class EventparnersService {
     }
 
     find(id: string): Promise<Eventparner[]> {
-        return this.eventparnersRepository.find({meetid:+id});
-    } 
+        return this.eventparnersRepository.find({ meetid: +id });
+    }
+
+    findByMail(mail: string): Promise<Eventparner[]> {
+        return this.eventparnersRepository.find({ peopleMail: mail });
+    }
 
     async remove(id: string): Promise<void> {
         await this.eventparnersRepository.delete(id);
@@ -29,15 +33,15 @@ export class EventparnersService {
 
     async create(data: any): Promise<[number, string, any]> {
 
-        
+
         //驗證資料存在性
         if (Object.keys(data).length === 0) {
             return [HttpStatus.BAD_REQUEST, "沒有輸入資料", null];
         }
 
         let parner = new Eventparner();
-        parner.meetid=data.meetid;
-        parner.peopleMail=data.mail;
+        parner.meetid = data.meetid;
+        parner.peopleMail = data.mail;
 
         try {
             //驗證資料正確性
@@ -66,5 +70,23 @@ export class EventparnersService {
         return [HttpStatus.OK, "OK", null];
     }
 
+    async delete(data: any): Promise<[number, string, any]> {
 
+        //驗證資料存在性
+        if (Object.keys(data).length === 0) {
+            return [HttpStatus.BAD_REQUEST, "沒有輸入資料", null];
+        }
+
+
+        await this.eventparnersRepository.delete({ meetid: data.meetid, peopleMail: data.mail }).then(() => {
+
+            return [HttpStatus.OK, "OK", null];
+        }).catch(() => {
+
+            return [HttpStatus.BAD_REQUEST, "取消會議失敗", null];
+        });
+
+
+        return [HttpStatus.OK, "OK", null];
+    }
 }

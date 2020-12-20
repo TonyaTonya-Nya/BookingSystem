@@ -1,4 +1,4 @@
-import { Controller,Post,Body,Response } from '@nestjs/common';
+import { Controller,Post,Body,Response,Delete } from '@nestjs/common';
 import { EventparnersService } from './eventparners.service';
 import { Eventparner } from './eventparners.entity';
 
@@ -16,6 +16,17 @@ export class EventparnersController {
   async create(@Response() res, @Body() data) {
   
     let response = await this.eventparnersService.create(data);
+    res.status(response[0]).json(response);
+
+  }
+
+  
+
+
+  @Delete()
+  async delete(@Response() res, @Body() data) {
+
+    let response = await this.eventparnersService.delete(data);
     res.status(response[0]).json(response);
 
   }

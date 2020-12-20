@@ -10,12 +10,12 @@ import { EventparnersService } from './DataBase/MeetPeople/eventparners.service'
 @Injectable()
 export class AppService {
 
-  private user: string = 'as61002@gmail.com';
-  private clientId: string = '585350057651-vbe2cckmlj50iub4cccanj0sh7ocfdl0.apps.googleusercontent.com';
-  private clientSecret: string = 'pCRPShd-LVkT7Cb9OCDJURPQ';
-  private refreshToken: string = '1//04NIOlkXUzsb2CgYIARAAGAQSNwF-L9IrdE5kdv_C5W6BHwrU62w8Kh9sc0Nfks5jX6GZp8XMBkwdjnEUU7YIplujBOlB_jgJykA';
+  private user = 'as61002@gmail.com';
+  private clientId = '585350057651-vbe2cckmlj50iub4cccanj0sh7ocfdl0.apps.googleusercontent.com';
+  private clientSecret = 'pCRPShd-LVkT7Cb9OCDJURPQ';
+  private refreshToken= '1//04NIOlkXUzsb2CgYIARAAGAQSNwF-L9IrdE5kdv_C5W6BHwrU62w8Kh9sc0Nfks5jX6GZp8XMBkwdjnEUU7YIplujBOlB_jgJykA';
 
-  private mailFromInfo: string = '"(不要回覆此郵件)" <virtualreservationassistant@gmail.com>'
+  private mailFromInfo= '"(不要回覆此郵件)" <virtualreservationassistant@gmail.com>'
 
   private nodemailer = require('nodemailer');
   private auth = {
@@ -146,6 +146,6 @@ export class AppService {
   }
 
   getHello(): string {
-    return 'Hello ';
+    return 'Hello ?';
   }
 }

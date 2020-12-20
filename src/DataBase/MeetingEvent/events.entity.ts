@@ -27,6 +27,7 @@ export class Event {
   @IsInt()
   end_t: number;
 
-  @Column({ default: false })
-  isCencel: boolean;
+  @Column()
+  @IsInt()
+  date: number;
 }
