@@ -1,5 +1,5 @@
-import { Entity, Column, PrimaryGeneratedColumn, Timestamp} from 'typeorm';
-import {IsLength,IsInt} from "validator.ts/decorator/Validation";
+import { Entity, Column, PrimaryGeneratedColumn} from 'typeorm';
+import {IsLength,IsInt,IsEmail} from "validator.ts/decorator/Validation";
 
 @Entity()
 export class Event {
@@ -30,4 +30,11 @@ export class Event {
   @Column()
   @IsInt()
   date: number;
+
+  @Column()
+  @IsEmail()
+  host: string;
+
+
+  member:any;
 }

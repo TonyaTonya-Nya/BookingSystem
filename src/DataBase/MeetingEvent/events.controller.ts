@@ -7,6 +7,14 @@ export class EventsController {
   constructor(private readonly eventsService: EventsService) { }
 
 
+  @Get()
+  async findById(@Response() res, @Param() params) {
+
+
+    res.status(HttpStatus.OK).json(await this.eventsService.find(params.id));
+
+  }
+
 
   @Get('date/:date')
   async find(@Response() res, @Param() params) {
@@ -14,6 +22,11 @@ export class EventsController {
 
     res.status(HttpStatus.OK).json(await this.eventsService.findByDate(params.date));
 
+  }
+
+  @Get('mail/:mail')
+  async findByMail(@Response() res, @Param() params) {
+    res.status(HttpStatus.OK).json(await this.eventsService.findByMail(params.mail));
   }
 
   @Post('create')
@@ -38,8 +51,10 @@ export class EventsController {
   async update(@Response() res, @Body() data) {
 
     let response = await this.eventsService.update(data);
-    console.log(response);
     res.status(response[0]).json(response);
 
   }
+
+
+
 }

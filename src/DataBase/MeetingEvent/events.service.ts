@@ -4,13 +4,15 @@ import { clearConfigCache } from 'prettier';
 import { Repository, Between } from 'typeorm';
 import { Event } from './events.entity';
 import { Validator } from "validator.ts/Validator";
-
+import { EventparnersService } from '../MeetPeople/eventparners.service';
 
 @Injectable()
 export class EventsService {
     constructor(
         @InjectRepository(Event)
         private eventsRepository: Repository<Event>,
+        private readonly eventparnersService: EventparnersService,
+
     ) { }
 
     findAll(): Promise<Event[]> {
@@ -21,14 +23,42 @@ export class EventsService {
         return this.eventsRepository.findOne(id);
     }
 
+    async find(meetid: string): Promise<any> {
+
+
+        let res = await this.eventsRepository.findOne(meetid);
+        console.log(res);
+
+
+        res.member = await this.eventparnersService.find(res.id.toString());
+
+
+        return res;
+    }
+
+
     async findByDate(date: string): Promise<Event[]> {
 
         let day = new Date(Date.parse(date));
-        console.log(day);
-        console.log(day.valueOf() - 1);
-        console.log(day.valueOf() + 86400000);
-        console.log(await this.eventsRepository.find({ date: Between(+day.valueOf(), +(day.valueOf() + 86400000)) }))
-        return await this.eventsRepository.find({ date: Between(+day.valueOf(), +(day.valueOf() + 86400000)) })
+
+        let res = await this.eventsRepository.find({ date: Between(+day.valueOf(), +(day.valueOf() + 86400000)) })
+        for (let i = 0; i < res.length; i++) {
+
+            res[i].member = await this.eventparnersService.find(res[i].id.toString());
+        }
+
+        return res;
+    }
+
+    async findByMail(mail: string): Promise<any> {
+
+
+        console.log(await this.eventparnersService.findByMail(mail))
+        return await this.eventparnersService.findByMail(mail);
+        // let module:EventparnersModule ;
+        // module.
+        // EventparnersModule.
+        //  return await this.eventsRepository.find({ host: mail })
     }
 
     async remove(id: string): Promise<void> {
@@ -43,8 +73,8 @@ export class EventsService {
 
         let existData = await this.eventsRepository.findOne({ id: data.meetid });
 
-        existData.description=data.description;
-        
+        existData.description = data.description;
+
 
         await this.eventsRepository.save(existData).then(() => {
 
@@ -71,6 +101,7 @@ export class EventsService {
         event.start_t = +data.start_t;
         event.end_t = +data.end_t;
         event.description = data.description;
+        event.host = data.host;
         let date = new Date(Date.parse(data.date));
         event.date = date.valueOf();
         // event.isCencel = false;
@@ -144,9 +175,4 @@ export class EventsService {
         return [HttpStatus.OK, "OK", null];
     }
 
-}
-export interface IUsers {
-    readonly ID: number;
-    readonly Name: string;
-    readonly Age: number;
 }
