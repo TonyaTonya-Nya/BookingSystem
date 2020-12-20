@@ -2,6 +2,7 @@ import { Controller,Post,Body,Response,Delete } from '@nestjs/common';
 import { EventparnersService } from './eventparners.service';
 import { Eventparner } from './eventparners.entity';
 
+
 @Controller('eventparner')
 export class EventparnersController {
   constructor(private readonly eventparnersService: EventparnersService) { }

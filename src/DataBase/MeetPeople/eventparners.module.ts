@@ -8,6 +8,6 @@ import { Eventparner } from './eventparners.entity';
   imports: [TypeOrmModule.forFeature([Eventparner])],
   providers: [EventparnersService],
   controllers: [EventparnersController],
-  exports: [TypeOrmModule]
+  exports: [TypeOrmModule,EventparnersService]
 })
 export class EventparnersModule {}

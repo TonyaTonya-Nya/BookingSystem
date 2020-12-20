@@ -24,6 +24,8 @@ export class EventparnersService {
     }
 
     findByMail(mail: string): Promise<Eventparner[]> {
+
+        console.log(mail)
         return this.eventparnersRepository.find({ peopleMail: mail });
     }
 
