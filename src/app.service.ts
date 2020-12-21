@@ -2,6 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { HttpStatus } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { json } from 'sequelize';
+import { AuthService } from './Auth/auth.service';
 import { Event } from './DataBase/MeetingEvent/events.entity';
 import { EventsService } from './DataBase/MeetingEvent/events.service';
 import { Eventparner } from './DataBase/MeetPeople/eventparners.entity';
@@ -35,13 +36,22 @@ export class AppService {
     private eventparnersService: EventparnersService,
     @InjectRepository(Event)
     private eventService: EventsService,
+    private authService: AuthService
   ) { }
 
   // 寄送郵件
-  async sendMail(data: any): Promise<[number, string, any]> {
+  async sendMail(data: any, req: any): Promise<[number, string, any]> {
     //驗證資料存在性
     if (Object.keys(data).length === 0) {
       return [HttpStatus.BAD_REQUEST, "沒有輸入資料", null];
+    }
+
+    let existData = await this.eventService.findOne(data.meetid);
+
+    // 驗證是否為創始者
+    const payload = await this.authService.decodeToken(req);
+    if (existData.host !== undefined && existData.host !== payload.mail) {
+        return [HttpStatus.UNAUTHORIZED, "不是會議創始者", null];
     }
 
     const parners = await this.eventparnersService.find(data.meetid);

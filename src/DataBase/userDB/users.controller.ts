@@ -1,7 +1,8 @@
 import { Controller, Get, Post, Body, Response, HttpStatus, UseGuards } from '@nestjs/common';
 import { UsersService } from './users.service';
 import { User } from './users.entity';
-import {AuthService} from '../../Auth/auth.service'
+import { AuthService } from '../../Auth/auth.service'
+import { AuthGuard } from '@nestjs/passport';
 
 @Controller('users')
 export class UsersController {
@@ -23,26 +24,22 @@ export class UsersController {
   @Post('login')
   async login(@Response() res, @Body() data) {
 
-    
     console.log('JWT驗證step1: 用戶請求登錄');
     const authResult = await this.authService.validateUser(data.account, data.password);
-    console.log(authResult);
+    let result = [];
     switch (authResult.code) {
       case 1:
-        return this.authService.certificate(authResult.user);
+        result = await this.authService.certificate(authResult.user);
+        break;
       case 2:
-        return {
-          code: 600,
-          msg: `账号或密码不正确`,
-        };
+        result = [HttpStatus.BAD_REQUEST, "帳號或密碼錯誤", null];
+        break;
       default:
-        return {
-          code: 600,
-          msg: `查无此人`,
-        };
+        result = [HttpStatus.BAD_REQUEST, "帳號未註冊", null];
+        break;
     }
-
-    let response = await this.usersService.login(data);
-    res.status(response[0]).json(response);
+    res.status(result[0]).json(result);
+    // let response = await this.usersService.login(data);
+    // res.status(response[0]).json(response);
   }
 }

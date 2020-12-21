@@ -1,14 +1,19 @@
-import { Injectable, HttpStatus } from '@nestjs/common';
+import { Injectable, HttpStatus, Inject, forwardRef } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Eventparner } from './eventparners.entity';
 import { Validator } from "validator.ts/Validator";
+import { AuthService } from 'src/Auth/auth.service';
+import { EventsService } from '../MeetingEvent/events.service';
 
 @Injectable()
 export class EventparnersService {
     constructor(
         @InjectRepository(Eventparner)
         private eventparnersRepository: Repository<Eventparner>,
+        private authService: AuthService,
+        @Inject(forwardRef(() => EventsService))
+        private eventService: EventsService,
     ) { }
 
     findAll(): Promise<Eventparner[]> {
@@ -33,12 +38,20 @@ export class EventparnersService {
         await this.eventparnersRepository.delete(id);
     }
 
-    async create(data: any): Promise<[number, string, any]> {
+    async create(data: any, req:any): Promise<[number, string, any]> {
 
 
         //驗證資料存在性
         if (Object.keys(data).length === 0) {
             return [HttpStatus.BAD_REQUEST, "沒有輸入資料", null];
+        }
+
+        let existData = await this.eventService.findOne(data.meetid);
+
+        // 驗證是否為創始者
+        const payload = await this.authService.decodeToken(req);
+        if (existData.host !== undefined && existData.host !== payload.mail) {
+            return [HttpStatus.UNAUTHORIZED, "不是會議創始者", null];
         }
 
         let parner = new Eventparner();
@@ -72,13 +85,20 @@ export class EventparnersService {
         return [HttpStatus.OK, "OK", null];
     }
 
-    async delete(data: any): Promise<[number, string, any]> {
+    async delete(data: any, req:any): Promise<[number, string, any]> {
 
         //驗證資料存在性
         if (Object.keys(data).length === 0) {
             return [HttpStatus.BAD_REQUEST, "沒有輸入資料", null];
         }
 
+        let existData = await this.eventService.findOne(data.meetid);
+
+        // 驗證是否為創始者
+        const payload = await this.authService.decodeToken(req);
+        if (existData.host !== undefined && existData.host !== payload.mail) {
+            return [HttpStatus.UNAUTHORIZED, "不是會議創始者", null];
+        }
 
         await this.eventparnersRepository.delete({ meetid: data.meetid, peopleMail: data.mail }).then(() => {
 

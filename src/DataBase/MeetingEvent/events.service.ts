@@ -5,6 +5,8 @@ import { Repository, Between } from 'typeorm';
 import { Event } from './events.entity';
 import { Validator } from "validator.ts/Validator";
 import { EventparnersService } from '../MeetPeople/eventparners.service';
+import * as jwt from 'jsonwebtoken';
+import { AuthService } from 'src/Auth/auth.service';
 
 @Injectable()
 export class EventsService {
@@ -12,7 +14,7 @@ export class EventsService {
         @InjectRepository(Event)
         private eventsRepository: Repository<Event>,
         private readonly eventparnersService: EventparnersService,
-
+        private readonly authService: AuthService
     ) { }
 
     findAll(): Promise<Event[]> {
@@ -65,13 +67,19 @@ export class EventsService {
         await this.eventsRepository.delete(id);
     }
 
-    async update(data: any): Promise<[number, string, any]> {
+    async update(data: any, req: any): Promise<[number, string, any]> {
         //驗證資料存在性
         if (Object.keys(data).length === 0) {
             return [HttpStatus.BAD_REQUEST, "沒有輸入資料", null];
         }
 
         let existData = await this.eventsRepository.findOne({ id: data.meetid });
+
+        // 驗證是否為創始者
+        const payload = await this.authService.decodeToken(req);
+        if (existData.host !== undefined && existData.host !== payload.mail) {
+            return [HttpStatus.UNAUTHORIZED, "不是會議創始者", null];
+        }
 
         existData.description = data.description;
 
@@ -87,7 +95,7 @@ export class EventsService {
         return [HttpStatus.OK, "OK", existData];
     }
 
-    async create(data: any): Promise<[number, string, any]> {
+    async create(data: any, req: any): Promise<[number, string, any]> {
 
 
         //驗證資料存在性
@@ -101,7 +109,8 @@ export class EventsService {
         event.start_t = +data.start_t;
         event.end_t = +data.end_t;
         event.description = data.description;
-        event.host = data.host;
+        const payload = await this.authService.decodeToken(req);
+        event.host = payload.mail;
         let date = new Date(Date.parse(data.date));
         event.date = date.valueOf();
         // event.isCencel = false;
@@ -151,20 +160,23 @@ export class EventsService {
         return [HttpStatus.OK, "OK", eventData];
     }
 
-
-
-
-
-    async delete(data: any): Promise<[number, string, any]> {
+    async delete(data: any, req: any): Promise<[number, string, any]> {
 
         //驗證資料存在性
         if (Object.keys(data).length === 0) {
             return [HttpStatus.BAD_REQUEST, "沒有輸入資料", null];
         }
 
+        let existData = await this.eventsRepository.findOne({ id: data.id });
+
+        // 驗證是否為創始者
+        const payload = await this.authService.decodeToken(req);
+        if (existData.host !== undefined && existData.host !== payload.mail) {
+            return [HttpStatus.UNAUTHORIZED, "不是會議創始者", null];
+        }
 
         await this.eventsRepository.delete({ id: data.id }).then(() => {
-
+            console.log('刪除會議');
             return [HttpStatus.OK, "OK", null];
         }).catch(() => {
 

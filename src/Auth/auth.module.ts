@@ -11,7 +11,7 @@ import { UsersController } from 'src/DataBase/userDB/users.controller';
 
 @Module({
     imports: [
-      PassportModule.register({ defaultStrategy: 'jwt' }),
+      PassportModule.register({ defaultStrategy: 'hostChecker' }),
       JwtModule.register({
         secret: jwtConstants.secret,
         signOptions: { expiresIn: '8h' }, // token 过期时效

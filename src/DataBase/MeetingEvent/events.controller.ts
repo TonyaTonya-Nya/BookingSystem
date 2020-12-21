@@ -1,6 +1,8 @@
-import { Controller, Get, Param, Post, Response, HttpStatus, Body,Delete,Put } from '@nestjs/common';
+import { Controller, Get, Param, Post, Response, HttpStatus, Body, Delete, Put, UseGuards, Request } from '@nestjs/common';
 import { EventsService } from './events.service';
 import { Event } from './events.entity';
+import { AuthGuard } from '@nestjs/passport';
+import { request } from 'http';
 
 @Controller('events')
 export class EventsController {
@@ -29,32 +31,24 @@ export class EventsController {
     res.status(HttpStatus.OK).json(await this.eventsService.findByMail(params.mail));
   }
 
+  @UseGuards(AuthGuard('jwt'))
   @Post('create')
-  async create(@Response() res, @Body() data) {
-
-    let response = await this.eventsService.create(data);
+  async create(@Response() res, @Body() data, @Request() req) {
+    let response = await this.eventsService.create(data, req);
     res.status(response[0]).json(response);
-
   }
 
-
+  @UseGuards(AuthGuard('jwt'))
   @Delete('delete')
-  async delete(@Response() res, @Body() data) {
-
-    let response = await this.eventsService.delete(data);
+  async delete(@Response() res, @Body() data, @Request() req) {
+    let response = await this.eventsService.delete(data, req);
     res.status(response[0]).json(response);
-
   }
-
-
+  @UseGuards(AuthGuard('jwt'))
   @Put('update')
-  async update(@Response() res, @Body() data) {
-
-    let response = await this.eventsService.update(data);
+  async update(@Response() res, @Body() data, @Request() req) {
+    let response = await this.eventsService.update(data, req);
     res.status(response[0]).json(response);
-
   }
-
-
 
 }

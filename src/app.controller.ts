@@ -1,4 +1,5 @@
-import { Controller, Get, Post, Body, Response, HttpStatus } from '@nestjs/common';
+import { Controller, Get, Post, Body, Response, HttpStatus, Request, UseGuards } from '@nestjs/common';
+import { AuthGuard } from '@nestjs/passport';
 import { AppService } from './app.service';
 
 @Controller()
@@ -10,9 +11,10 @@ export class AppController {
     return this.appService.getHello();
   }
 
+  @UseGuards(AuthGuard('jwt'))
   @Post('sendMail')
-  async sendMail(@Response() res, @Body() data) {
-    let response = await this.appService.sendMail(data);
+  async sendMail(@Response() res, @Body() data, @Request() req) {
+    let response = await this.appService.sendMail(data, req);
     res.status(HttpStatus.CREATED).json(response);
   }
 
