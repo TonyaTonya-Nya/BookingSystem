@@ -4,8 +4,7 @@ import { EventsService } from './events.service';
 import { EventsController } from './events.controller';
 import { Event } from './events.entity';
 import { EventparnersModule } from '../MeetPeople/eventparners.module';
-import { AuthService } from 'src/Auth/auth.service';
-import { AuthModule } from 'src/auth/auth.module';
+import { AuthModule } from 'src/Auth/auth.module';
 
 @Module({
   imports: [TypeOrmModule.forFeature([Event]),EventparnersModule, AuthModule],
