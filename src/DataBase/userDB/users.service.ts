@@ -76,6 +76,8 @@ export class UsersService {
 
       return [HttpStatus.BAD_REQUEST, "加入資料庫失敗", null];
     });
+
+    return [HttpStatus.OK, "OK", null];
   }
 
 
@@ -95,6 +97,8 @@ export class UsersService {
     } else {
       return [HttpStatus.BAD_REQUEST, "密碼錯誤", null];
     }
+
+
 
   }
 

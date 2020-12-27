@@ -13,10 +13,10 @@ import { UsersController } from './DataBase/userDB/users.controller';
   imports: [
     TypeOrmModule.forRoot({
       type: 'mysql',
-      host: '127.0.0.1',
+      host: '35.229.50.228',
       port: 3306,
       username: 'root',
-      password: 'root',
+      password: 'roottoor',
       database: 'test',
       entities: [__dirname + '/**/*.entity{.ts,.js}'],
       synchronize: false,

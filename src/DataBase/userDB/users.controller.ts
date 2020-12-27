@@ -16,8 +16,11 @@ export class UsersController {
 
   @Post('create')
   async create(@Response() res, @Body() data) {
+
     let response = await this.usersService.create(data);
+    //console.log(await this.usersService.create(data));
     res.status(response[0]).json(response);
+
   }
 
 
