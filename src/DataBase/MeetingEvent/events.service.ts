@@ -7,6 +7,7 @@ import { Validator } from "validator.ts/Validator";
 import { EventparnersService } from '../MeetPeople/eventparners.service';
 import * as jwt from 'jsonwebtoken';
 import { AuthService } from 'src/Auth/auth.service';
+import { streetviewpublish } from 'googleapis/build/src/apis/streetviewpublish';
 
 @Injectable()
 export class EventsService {
@@ -53,10 +54,38 @@ export class EventsService {
     }
 
     async findByMail(mail: string): Promise<any> {
-
-
-        console.log(await this.eventparnersService.findByMail(mail))
-        return await this.eventparnersService.findByMail(mail);
+        //驗證資料存在性
+        if (Object.keys(mail).length === 0) {
+            return [HttpStatus.BAD_REQUEST, "沒有輸入資料", null];
+        }
+        let datas = [];
+        let hostData = await this.eventsRepository.find({ host: mail });
+        for (let i = 0; i < hostData.length; i++) {
+            datas.push({
+                "id": hostData[i].id,
+                "roomid": hostData[i].roomId,
+                "eventName": hostData[i].eventName,
+                "start_t": hostData[i].start_t,
+                "end_t": hostData[i].end_t,
+                "date": hostData[i].date
+            })
+        }
+        let joinData = await this.eventparnersService.findByMail(mail);
+        for (let i = 0; i < joinData.length; i++) {
+            const event = await this.eventsRepository.findOne(joinData[i].meetid);
+            if (event === undefined) {
+                continue;
+            }
+            datas.push({
+                "id": event.id,
+                "roomid": event.roomId,
+                "eventName": event.eventName,
+                "start_t": event.start_t,
+                "end_t": event.end_t,
+                "date": event.date
+            })
+        }
+        return [HttpStatus.OK, "OK", datas];
         // let module:EventparnersModule ;
         // module.
         // EventparnersModule.

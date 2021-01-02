@@ -1,6 +1,8 @@
-import { Injectable } from '@nestjs/common';
+import { Body, Injectable } from '@nestjs/common';
 import { HttpStatus } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
+import { GoogleApis } from 'googleapis';
+import { stringify } from 'querystring';
 import { json } from 'sequelize';
 import { AuthService } from './Auth/auth.service';
 import { Event } from './DataBase/MeetingEvent/events.entity';
@@ -14,8 +16,8 @@ export class AppService {
   private user = 'as61002@gmail.com';
   private clientId = '585350057651-vbe2cckmlj50iub4cccanj0sh7ocfdl0.apps.googleusercontent.com';
   private clientSecret = 'pCRPShd-LVkT7Cb9OCDJURPQ';
-  private refreshToken= '1//04NIOlkXUzsb2CgYIARAAGAQSNwF-L9IrdE5kdv_C5W6BHwrU62w8Kh9sc0Nfks5jX6GZp8XMBkwdjnEUU7YIplujBOlB_jgJykA';
-
+  private refreshToken= '1//044dMVvWzYEa0CgYIARAAGAQSNwF-L9Irou7ophEnTZkc979gCvz_fMFwuP7kNcHjMbdB1mLh35ZV6ZaXPgcrE-NBNk2T9xlKQ4k';
+  
   private mailFromInfo= '"(不要回覆此郵件)" <virtualreservationassistant@gmail.com>'
 
   private nodemailer = require('nodemailer');
@@ -47,6 +49,18 @@ export class AppService {
     }
 
     let existData = await this.eventService.findOne(data.meetid);
+    // fetch("https://api.hubapi.com/oauth/v1/token", {
+    //   method: "POST",
+    //   headers: new URLSearchParams({
+    //     "Content-Type": "application/x-www-form-urlencoded;charset=utf-8"
+    //   }),
+    //   body: new URLSearchParams({
+    //     "grant_type": "authorization_code",
+
+    //   })
+    // })
+
+    console.log(existData);
 
     // 驗證是否為創始者
     const payload = await this.authService.decodeToken(req);
@@ -58,7 +72,10 @@ export class AppService {
     const receivers = []
     for (let i = 0; i < parners.length; i++) {
       receivers.push(parners[i].peopleMail);
+      console.log(receivers[i]);
     }
+    receivers.push(existData.host);
+    console.log(receivers[receivers.length - 1]);
 
     const mailOptions = {
       from: this.mailFromInfo,
@@ -66,7 +83,6 @@ export class AppService {
       subject: data.subject,
       text: data.text,
     }
-
     this.mailTransport.sendMail(mailOptions);
     return [HttpStatus.CREATED, "OK", null];
   }
@@ -96,12 +112,17 @@ export class AppService {
     for (let i = 0; i < parners.length; i++) {
       receivers.push(parners[i].peopleMail);
     }
+    receivers.push(meetingEvent.host);
 
     const calendar = google.calendar({ version: 'v3', auth: oAuth2Client })
     const eventStartTime = new Date();
-    eventStartTime.setTime(meetingEvent.start_t);
+    eventStartTime.setTime(meetingEvent.date);
+    eventStartTime.setHours(meetingEvent.start_t)
+    // eventStartTime.setTime(meetingEvent.start_t);
     const eventEndTime = new Date();
-    eventEndTime.setTime(meetingEvent.end_t);
+    console.log(meetingEvent);
+    eventEndTime.setTime(meetingEvent.date);
+    eventEndTime.setHours(meetingEvent.end_t);
     const event = {
       summary: meetingEvent.eventName,
       location: meetingEvent.roomId,

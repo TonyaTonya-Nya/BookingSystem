@@ -15,13 +15,14 @@ export class AppController {
   @Post('sendMail')
   async sendMail(@Response() res, @Body() data, @Request() req) {
     let response = await this.appService.sendMail(data, req);
-    res.status(HttpStatus.CREATED).json(response);
+    console.log('拿到回傳結果');
+    res.status(response[0]).json(response);
   }
 
   @Post('sendCalendar')
   async sendCalendar(@Response() res, @Body() data) {
     let response = await this.appService.sendCalendar(data);
-    res.status(HttpStatus.CREATED).json(response);
+    res.status(response[0]).json(response);
   }
 
 }
