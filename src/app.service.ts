@@ -34,9 +34,9 @@ export class AppService {
   });
 
   constructor(
-    @InjectRepository(Eventparner)
+    // @InjectRepository(Eventparner)
     private eventparnersService: EventparnersService,
-    @InjectRepository(Event)
+    // @InjectRepository(Event)
     private eventService: EventsService,
     private authService: AuthService
   ) { }
@@ -49,18 +49,6 @@ export class AppService {
     }
 
     let existData = await this.eventService.findOne(data.meetid);
-    // fetch("https://api.hubapi.com/oauth/v1/token", {
-    //   method: "POST",
-    //   headers: new URLSearchParams({
-    //     "Content-Type": "application/x-www-form-urlencoded;charset=utf-8"
-    //   }),
-    //   body: new URLSearchParams({
-    //     "grant_type": "authorization_code",
-
-    //   })
-    // })
-
-    console.log(existData);
 
     // 驗證是否為創始者
     const payload = await this.authService.decodeToken(req);
@@ -68,7 +56,8 @@ export class AppService {
         return [HttpStatus.UNAUTHORIZED, "不是會議創始者", null];
     }
 
-    const parners = await this.eventparnersService.find(data.meetid);
+    const parners = await this.eventparnersService.find(data.meetid.toString());
+
     const receivers = []
     for (let i = 0; i < parners.length; i++) {
       receivers.push(parners[i].peopleMail);
