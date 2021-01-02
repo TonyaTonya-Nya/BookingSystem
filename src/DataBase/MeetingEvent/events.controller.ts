@@ -9,10 +9,10 @@ export class EventsController {
   constructor(private readonly eventsService: EventsService) { }
 
 
-  @Get()
+  @Get(':id')
   async findById(@Response() res, @Param() params) {
 
-
+    console.log(params);
     res.status(HttpStatus.OK).json(await this.eventsService.find(params.id));
 
   }
