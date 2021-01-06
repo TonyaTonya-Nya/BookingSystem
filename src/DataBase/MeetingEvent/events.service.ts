@@ -61,6 +61,10 @@ export class EventsService {
         let datas = [];
         let hostData = await this.eventsRepository.find({ host: mail });
         for (let i = 0; i < hostData.length; i++) {
+            // 若日期已過則不回傳
+            if (hostData[i].date < Date.now()) {
+                continue;
+            }
             datas.push({
                 "id": hostData[i].id,
                 "roomid": hostData[i].roomId,
@@ -74,6 +78,10 @@ export class EventsService {
         for (let i = 0; i < joinData.length; i++) {
             const event = await this.eventsRepository.findOne(joinData[i].meetid);
             if (event === undefined) {
+                continue;
+            }
+            // 若日期已過則不回傳
+            if (event.date < Date.now()) {
                 continue;
             }
             datas.push({
