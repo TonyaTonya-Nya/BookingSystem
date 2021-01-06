@@ -53,6 +53,9 @@ export class AuthService {
   }
 
   async decodeToken(req: any): Promise<any> {
+    req.header("Access-Control-Allow-Origin","*");
+    req.header("Access-Control-Allow-Headers", "X-Requested-With,Origin,Content-Type,Accept");  
+    req.header("Access-Control-Allow-Methods","PUT,POST,GET,DELETE,OPTIONS");  
     const token = req.header('Authorization').replace('Bearer ', '');
     const decoded = jwt.verify(token, jwtConstants.secret);
     return decoded;
