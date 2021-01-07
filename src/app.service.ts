@@ -16,7 +16,7 @@ export class AppService {
   private user = 'as61002@gmail.com';
   private clientId = '585350057651-vbe2cckmlj50iub4cccanj0sh7ocfdl0.apps.googleusercontent.com';
   private clientSecret = 'pCRPShd-LVkT7Cb9OCDJURPQ';
-  private refreshToken= '1//044dMVvWzYEa0CgYIARAAGAQSNwF-L9Irou7ophEnTZkc979gCvz_fMFwuP7kNcHjMbdB1mLh35ZV6ZaXPgcrE-NBNk2T9xlKQ4k';
+  private refreshToken= '1//04mxhXs-W0XgdCgYIARAAGAQSNwF-L9Ir9JDxM77rd-8X59REKePeMWXPTgcSIXoFLF9VotXtxYnA70hGsVcdNS7PO0flWsc-Z4Q';
   
   private mailFromInfo= '"(不要回覆此郵件)" <virtualreservationassistant@gmail.com>'
 
@@ -69,8 +69,8 @@ export class AppService {
     const mailOptions = {
       from: this.mailFromInfo,
       to: receivers,
-      subject: data.subject,
-      text: data.text,
+      subject: existData.eventName,
+      text: existData.description,
     }
     this.mailTransport.sendMail(mailOptions);
     return [HttpStatus.CREATED, "OK", null];

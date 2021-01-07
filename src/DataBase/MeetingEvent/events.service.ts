@@ -36,21 +36,30 @@ export class EventsService {
         res.member = await this.eventparnersService.find(res.id.toString());
 
 
-        return res;
+        return [HttpStatus.OK, "OK", res];
     }
 
 
-    async findByDate(date: string): Promise<Event[]> {
-
-        let day = new Date(Date.parse(date));
-
-        let res = await this.eventsRepository.find({ date: Between(+day.valueOf(), +(day.valueOf() + 86400000)) })
+    async findByDate(date: string): Promise<any> {
+        //驗證資料存在性
+        if (Object.keys(date).length === 0) {
+            return [HttpStatus.BAD_REQUEST, "沒有輸入資料", null];
+        }
+        let day = new Date();
+        day.setTime(Date.parse(date));
+        let dayEnd = new Date();
+        dayEnd.setTime(Date.parse(date));
+        dayEnd.setSeconds(day.getSeconds() + 86400 - 1);
+        console.log(+day.valueOf());
+        console.log(+dayEnd.valueOf());
+        let res = await this.eventsRepository.find({ date: Between(+day.valueOf(), +dayEnd.valueOf()) })
+        console.log(res.length);
         for (let i = 0; i < res.length; i++) {
 
             res[i].member = await this.eventparnersService.find(res[i].id.toString());
         }
 
-        return res;
+        return [HttpStatus.OK, "OK", res];
     }
 
     async findByMail(mail: string): Promise<any> {
