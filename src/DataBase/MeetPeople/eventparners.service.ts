@@ -96,6 +96,8 @@ export class EventparnersService {
 
         // 驗證是否為創始者
         const payload = await this.authService.decodeToken(req);
+        console.log(payload.mail);
+        console.log(existData.host);
         if (existData.host !== undefined && existData.host !== payload.mail) {
             return [HttpStatus.UNAUTHORIZED, "不是會議創始者", null];
         }
