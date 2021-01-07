@@ -73,7 +73,7 @@ export class AppService {
       text: existData.description,
     }
     this.mailTransport.sendMail(mailOptions);
-    return [HttpStatus.CREATED, "OK", null];
+    return [HttpStatus.OK, "OK", null];
   }
 
   // 寄送日曆事件
@@ -156,13 +156,13 @@ export class AppService {
             console.error('Calendar Event Creation Error:', err);
             return [HttpStatus.BAD_REQUEST, "Calendar Event Creation Error: ", err];
           }
-          return [HttpStatus.CREATED, "OK", null];
+          return [HttpStatus.OK, "OK", null];
         })
       }
       console.log('Sorry I\'m busy')
       return [HttpStatus.BAD_REQUEST, "Error.", undefined];
     })
-    return [HttpStatus.CREATED, "OK", null];
+    return [HttpStatus.OK, "OK", null];
   }
 
   getHello(): string {
