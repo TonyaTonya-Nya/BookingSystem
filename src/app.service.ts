@@ -68,7 +68,9 @@ export class AppService {
     console.log(receivers[receivers.length - 1]);
     const date = new Date();
     date.setTime(existData.date);
-    if (!data.isCancel) {
+    console.log(data);
+    if (data.isCancel === 'false') {
+      console.log("新增會議");
       const content = "Time: " + date.getFullYear() + "-" + (date.getMonth() + 1) + "-" + date.getDate() +
         " " + existData.start_t + ":00 ~ " + (existData.start_t + 1) + ":00\n" +
         "Location: TR" + existData.roomId + "\n" + existData.description;
