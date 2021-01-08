@@ -15,7 +15,8 @@ export class EventsService {
         @InjectRepository(Event)
         private eventsRepository: Repository<Event>,
         private readonly eventparnersService: EventparnersService,
-        private readonly authService: AuthService
+        private readonly authService: AuthService,
+        // private readonly appService: AppService
     ) { }
 
     findAll(): Promise<Event[]> {
@@ -74,9 +75,9 @@ export class EventsService {
             if (hostData[i].date < Date.now()) {
                 continue;
             }
-            let parners = await this.eventparnersService.find( hostData[i].id.toString());
+            let parners = await this.eventparnersService.find(hostData[i].id.toString());
             let parnersMails = [];
-            for (let p = 0;p < parners.length;p++) {
+            for (let p = 0; p < parners.length; p++) {
                 parnersMails.push(parners[p].peopleMail);
             }
             datas.push({
@@ -100,9 +101,9 @@ export class EventsService {
             if (event.date < Date.now()) {
                 continue;
             }
-            let parners = await this.eventparnersService.find( event.id.toString());
+            let parners = await this.eventparnersService.find(event.id.toString());
             let parnersMails = [];
-            for (let p = 0;p < parners.length;p++) {
+            for (let p = 0; p < parners.length; p++) {
                 parnersMails.push(parners[p].peopleMail);
             }
             datas.push({
@@ -235,14 +236,17 @@ export class EventsService {
             return [HttpStatus.UNAUTHORIZED, "不是會議創始者", null];
         }
 
+        let parners = await this.eventparnersService.find(data.id.toString());
         await this.eventsRepository.delete({ id: data.id }).then(() => {
             console.log('刪除會議');
             return [HttpStatus.OK, "OK", null];
         }).catch(() => {
-
             return [HttpStatus.BAD_REQUEST, "取消會議失敗", null];
         });
-
+        
+        for (let i = 0; i < parners.length; i++) {
+            await this.eventparnersService.delete(data, req);
+        }
 
         return [HttpStatus.OK, "OK", null];
     }

@@ -26,8 +26,8 @@ import { UsersController } from './DataBase/userDB/users.controller';
     EventparnersModule,
     AuthModule,
   ],
-    
+  exports: [AppService],
   controllers: [AppController, UsersController],
   providers: [AppService],
 })
-export class AppModule {}
+export class AppModule { }
