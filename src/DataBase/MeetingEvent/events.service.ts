@@ -74,13 +74,20 @@ export class EventsService {
             if (hostData[i].date < Date.now()) {
                 continue;
             }
+            let parners = await this.eventparnersService.find( hostData[i].id.toString());
+            let parnersMails = [];
+            for (let p = 0;p < parners.length;p++) {
+                parnersMails.push(parners[p].peopleMail);
+            }
             datas.push({
                 "id": hostData[i].id,
                 "roomid": hostData[i].roomId,
                 "eventName": hostData[i].eventName,
+                "description": hostData[i].description,
                 "start_t": hostData[i].start_t,
                 "end_t": hostData[i].end_t,
-                "date": hostData[i].date
+                "date": hostData[i].date,
+                "members": parnersMails
             })
         }
         let joinData = await this.eventparnersService.findByMail(mail);
@@ -93,13 +100,20 @@ export class EventsService {
             if (event.date < Date.now()) {
                 continue;
             }
+            let parners = await this.eventparnersService.find( event.id.toString());
+            let parnersMails = [];
+            for (let p = 0;p < parners.length;p++) {
+                parnersMails.push(parners[p].peopleMail);
+            }
             datas.push({
                 "id": event.id,
                 "roomid": event.roomId,
                 "eventName": event.eventName,
+                "description": event.description,
                 "start_t": event.start_t,
                 "end_t": event.end_t,
-                "date": event.date
+                "date": event.date,
+                "members": parnersMails
             })
         }
         return [HttpStatus.OK, "OK", datas];
