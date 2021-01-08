@@ -16,9 +16,9 @@ export class AppService {
   private user = 'as61002@gmail.com';
   private clientId = '585350057651-vbe2cckmlj50iub4cccanj0sh7ocfdl0.apps.googleusercontent.com';
   private clientSecret = 'pCRPShd-LVkT7Cb9OCDJURPQ';
-  private refreshToken= '1//04mxhXs-W0XgdCgYIARAAGAQSNwF-L9Ir9JDxM77rd-8X59REKePeMWXPTgcSIXoFLF9VotXtxYnA70hGsVcdNS7PO0flWsc-Z4Q';
-  
-  private mailFromInfo= '"(不要回覆此郵件)" <virtualreservationassistant@gmail.com>'
+  private refreshToken = '1//04mxhXs-W0XgdCgYIARAAGAQSNwF-L9Ir9JDxM77rd-8X59REKePeMWXPTgcSIXoFLF9VotXtxYnA70hGsVcdNS7PO0flWsc-Z4Q';
+
+  private mailFromInfo = '"(不要回覆此郵件)" <virtualreservationassistant@gmail.com>'
 
   private nodemailer = require('nodemailer');
   private auth = {
@@ -48,12 +48,13 @@ export class AppService {
       return [HttpStatus.BAD_REQUEST, "沒有輸入資料", null];
     }
 
+
     let existData = await this.eventService.findOne(data.meetid);
 
     // 驗證是否為創始者
     const payload = await this.authService.decodeToken(req);
     if (existData.host !== undefined && existData.host !== payload.mail) {
-        return [HttpStatus.UNAUTHORIZED, "不是會議創始者", null];
+      return [HttpStatus.UNAUTHORIZED, "不是會議創始者", null];
     }
 
     const parners = await this.eventparnersService.find(data.meetid.toString());
@@ -65,14 +66,28 @@ export class AppService {
     }
     receivers.push(existData.host);
     console.log(receivers[receivers.length - 1]);
-
-    const mailOptions = {
-      from: this.mailFromInfo,
-      to: receivers,
-      subject: existData.eventName,
-      text: existData.description,
+    const date = new Date();
+    date.setTime(existData.date);
+    if (!data.isCancel) {
+      const content = "Time: " + date.getFullYear() + "-" + (date.getMonth() + 1) + "-" + date.getDate() +
+        " " + existData.start_t + ":00 ~ " + (existData.start_t + 1) + ":00\n" +
+        "Location: TR" + existData.roomId + "\n" + existData.description;
+      const mailOptions = {
+        from: this.mailFromInfo,
+        to: receivers,
+        subject: "你已收到會議邀請: " + existData.eventName,
+        text: content,
+      }
+      this.mailTransport.sendMail(mailOptions);
+    } else {
+      const mailOptions = {
+        from: this.mailFromInfo,
+        to: receivers,
+        subject: "會議已取消: " + existData.eventName,
+        text: "會議 " +  existData.eventName + " 已被" + existData.host + " 取消。",
+      }
+      this.mailTransport.sendMail(mailOptions);
     }
-    this.mailTransport.sendMail(mailOptions);
     return [HttpStatus.OK, "OK", null];
   }
 
